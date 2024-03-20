@@ -1,8 +1,8 @@
+using EntityFrameworkCore.UseRowNumberForPaging;
 using Microsoft.EntityFrameworkCore;
 using ShopInventory.API.Databases;
 using ShopInventory.API.Services;
 using ShopInventory.API.Services.Interfaces;
-using EntityFrameworkCore.UseRowNumberForPaging;
 
 var builder = WebApplication.CreateBuilder(args);
 

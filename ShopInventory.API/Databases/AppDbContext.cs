@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using ShopInventory.API.Models;
+using ShopInventory.API.Databases.Models;
 
 namespace ShopInventory.API.Databases;
 
@@ -15,6 +15,8 @@ public class AppDbContext : DbContext
     }
 
     public virtual DbSet<Artigo> Artigos { get; set; }
+
+    public virtual DbSet<ArtigoMoedum> ArtigoMoeda { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder.UseSqlServer("name=ShopInventoryContext");
@@ -32,6 +34,19 @@ public class AppDbContext : DbContext
                 .IsConcurrencyToken();
 
             entity.HasOne(d => d.ArtigoPaiNavigation).WithMany(p => p.InverseArtigoPaiNavigation).HasConstraintName("Artigo_Artigo_FK");
+        });
+
+        modelBuilder.Entity<ArtigoMoedum>(entity =>
+        {
+            entity.HasKey(e => new { e.Artigo, e.Unidade, e.Moeda }).HasName("ArtigoMoeda01");
+
+            entity.Property(e => e.VersaoUltAct)
+                .IsRowVersion()
+                .IsConcurrencyToken();
+
+            entity.HasOne(d => d.ArtigoNavigation).WithMany(p => p.ArtigoMoeda)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("ArtigoMoeda_Artigo_FK");
         });
     }
 }

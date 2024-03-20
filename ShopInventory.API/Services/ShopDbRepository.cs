@@ -1,11 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using ShopInventory.API.Databases;
+using ShopInventory.API.Dtos;
 using ShopInventory.API.ExtentionMethods;
-using ShopInventory.API.Models;
 using ShopInventory.API.Services.Interfaces;
-using System.Globalization;
-using System.Text;
 
 namespace ShopInventory.API.Services;
 
@@ -18,17 +16,44 @@ public class ShopDbRepository : IShopDbRepository
         _dbContext = dbContext;
     }
 
-    public async Task<IEnumerable<Artigo>> GetArtigosAsync(int pageSize, int pageNumber, string? name)
+    public async Task<IEnumerable<ArtigoDto>> GetArtigosAsync(int pageSize, int pageNumber, string? name)
     {
-        var pagesToSkip = pageNumber - 1;
-        
-        if (!name.IsNullOrEmpty() && name != null)
+        var pagesToSkip = (pageNumber - 1) * pageSize;
+
+        var query = _dbContext.Artigos
+            .Include(x => x.ArtigoMoeda)
+            .Select(x => new
+            {
+                x.Descricao,
+                x.Stkactual,
+                ArtigoMoedaPrice = x.ArtigoMoeda.Select(am => am.Pvp1).FirstOrDefault()
+            });
+
+        if (!string.IsNullOrEmpty(name))
         {
             name = name.RemoveDiacritics();
-            return await _dbContext.Artigos.Where(x => x.Descricao!.Contains(name)).Skip(pagesToSkip).Take(pageSize).ToListAsync();
+            query = query.Where(x => x.Descricao!.Contains(name));
         }
 
-        return await _dbContext.Artigos.Skip(pagesToSkip).Take(pageSize).ToListAsync();
+        var artigosFromDb = await query
+            .Skip(pagesToSkip)
+            .Take(pageSize)
+            .ToListAsync();
+
+        var artigos = artigosFromDb.Select(artigo =>
+        {
+            double stock = artigo.Stkactual ?? 0;
+            double price = artigo.ArtigoMoedaPrice ?? 0;
+
+            return new ArtigoDto
+            {
+                Name = artigo.Descricao ?? string.Empty,
+                Quantity = Math.Max(stock, 0),
+                Price = price
+            };
+        });
+
+        return artigos;
     }
 
     public async Task<int> GetArtigosCountAsync()

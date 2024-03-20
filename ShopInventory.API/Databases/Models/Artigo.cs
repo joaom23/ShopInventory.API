@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
-namespace ShopInventory.API.Models;
+namespace ShopInventory.API.Databases.Models;
 
 [Table("Artigo")]
-public partial class Artigo
+public class Artigo
 {
     [Key]
     [Column("Artigo")]
@@ -336,6 +334,9 @@ public partial class Artigo
     public bool? UtilManutencao { get; set; }
 
     public bool SacosLeves { get; set; }
+
+    [InverseProperty("ArtigoNavigation")]
+    public virtual ICollection<ArtigoMoedum> ArtigoMoeda { get; set; } = new List<ArtigoMoedum>();
 
     [ForeignKey("ArtigoPai")]
     [InverseProperty("InverseArtigoPaiNavigation")]

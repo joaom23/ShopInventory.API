@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
-using ShopInventory.API.Models;
+using ShopInventory.API.Databases.Models;
+using ShopInventory.API.Dtos;
 using ShopInventory.API.Services.Interfaces;
 
 namespace ShopInventory.API.Controllers;
@@ -19,7 +19,7 @@ public class ArtigosController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IEnumerable<Artigo>> GetArtigosAsync(int pageSize = 2, int pageNumber = 1, string? name = null)
+    public async Task<IEnumerable<ArtigoDto>> GetArtigosAsync(int pageSize = 100, int pageNumber = 1, string? name = null)
     {
         return await _shopDbService.GetArtigosAsync(pageSize, pageNumber, name);
     }
