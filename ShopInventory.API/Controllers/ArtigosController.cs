@@ -19,7 +19,7 @@ public class ArtigosController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IEnumerable<ArtigoDto>> GetArtigosAsync(int pageSize = 100, int pageNumber = 1, string? name = null)
+    public async Task<IEnumerable<ArtigoDto>> GetArtigosAsync(int pageSize = 10, int pageNumber = 1, string? name = null)
     {
         return await _shopDbService.GetArtigosAsync(pageSize, pageNumber, name);
     }
