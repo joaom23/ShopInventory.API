@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Controllers\Responses\" />
     <Folder Include="Databases\Models\" />
   </ItemGroup>
 

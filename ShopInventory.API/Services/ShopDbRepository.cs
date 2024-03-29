@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using ShopInventory.API.Databases;
 using ShopInventory.API.Dtos;
 using ShopInventory.API.ExtentionMethods;
 using ShopInventory.API.Services.Interfaces;
+using ShopInventory.API.Shared;
 
 namespace ShopInventory.API.Services;
 
@@ -16,9 +16,27 @@ public class ShopDbRepository : IShopDbRepository
         _dbContext = dbContext;
     }
 
-    public async Task<IEnumerable<ArtigoDto>> GetArtigosAsync(int pageSize, int pageNumber, string? name)
+    public async Task<ArtigosResponse> GetArtigosAsync(int pageSize, int pageNumber, string? name)
     {
         var pagesToSkip = (pageNumber - 1) * pageSize;
+
+        //var test = Enumerable.Range(1, 55).Select(i => new ArtigoDto { Name = "test" + i, Quantity = i, Price = i });
+
+        //if (!string.IsNullOrEmpty(name))
+        //{
+        //    name = name.RemoveDiacritics();
+        //    test = test.Where(x => x.Name!.Contains(name));
+        //}
+
+        //var artigos = test.Skip(pagesToSkip).Take(pageSize);
+
+        //return new ArtigosResponse()
+        //{
+        //    Artigos = artigos.ToList(),
+        //    CurrentPage = pageNumber,
+        //    PageSize = pageSize,
+        //    TotalCount = test.Count()
+        //};
 
         var query = _dbContext.Artigos
             .Include(x => x.ArtigoMoeda)
@@ -53,7 +71,13 @@ public class ShopDbRepository : IShopDbRepository
             };
         });
 
-        return artigos;
+        return new ArtigosResponse()
+        {
+            Artigos = artigos.ToList(),
+            CurrentPage = pageNumber,
+            PageSize = pageSize,
+            TotalCount = artigosFromDb.Count
+        };
     }
 
     public async Task<int> GetArtigosCountAsync()

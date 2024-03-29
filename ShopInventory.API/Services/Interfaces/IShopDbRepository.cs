@@ -1,9 +1,9 @@
-﻿using ShopInventory.API.Dtos;
+﻿using ShopInventory.API.Shared;
 
 namespace ShopInventory.API.Services.Interfaces;
 
 public interface IShopDbRepository
 {
     Task<int> GetArtigosCountAsync();
-    Task<IEnumerable<ArtigoDto>> GetArtigosAsync(int pageSize, int pageNumber, string? name = null);
+    Task<ArtigosResponse> GetArtigosAsync(int pageSize, int pageNumber, string? name = null);
 }
