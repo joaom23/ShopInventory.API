@@ -53,6 +53,8 @@ public class ShopDbRepository : IShopDbRepository
             query = query.Where(x => x.Descricao!.Contains(name));
         }
 
+        var totalCount = await query.CountAsync();
+
         var artigosFromDb = await query
             .Skip(pagesToSkip)
             .Take(pageSize)
@@ -76,7 +78,7 @@ public class ShopDbRepository : IShopDbRepository
             Artigos = artigos.ToList(),
             CurrentPage = pageNumber,
             PageSize = pageSize,
-            TotalCount = artigosFromDb.Count
+            TotalCount = totalCount
         };
     }
 
