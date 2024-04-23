@@ -1,9 +1,13 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
+using ShopInventory.API.Authentication;
 using ShopInventory.API.Services.Interfaces;
 using ShopInventory.API.Shared;
 
 namespace ShopInventory.API.Controllers;
 
+[ServiceFilter(typeof(ApiKeyAuthFilter))]
+[EnableRateLimiting("IpPolicy")]
 [ApiController]
 [Route("[controller]")]
 public class ArtigosController : ControllerBase
